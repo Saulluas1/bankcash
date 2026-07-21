@@ -20,8 +20,13 @@ export const useAuthStore = create<AuthStore>()(
       clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
     }),
     {
-      name: 'bankcash-auth', // localStorage key
-      partialize: (state) => ({ user: state.user, token: state.token }),
+      name: 'bankcash-auth',
+      // Persist all three fields so isAuthenticated survives a page refresh
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );
