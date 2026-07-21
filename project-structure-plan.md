@@ -217,7 +217,7 @@
 
 **Relevant Context:** `data-source.ts` stub created in Sub-Task 2; this task fills in real TypeORM config. PostgreSQL is installed directly on Windows via the official installer.
 
-**Status:** [ ] pending
+**Status:** [x] pending
 
 ---
 

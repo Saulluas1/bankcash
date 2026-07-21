@@ -13,7 +13,7 @@
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'bankcash_user') THEN
-    CREATE ROLE bankcash_user WITH LOGIN PASSWORD 'P-tech';
+    CREATE ROLE bankcash_user WITH LOGIN PASSWORD 'Tu_contraseña';
     RAISE NOTICE 'Usuario bankcash_user creado correctamente.';
   ELSE
     RAISE NOTICE 'El usuario bankcash_user ya existe, se omite.';
