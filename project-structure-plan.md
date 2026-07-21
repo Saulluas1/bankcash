@@ -27,7 +27,7 @@
 
 **Relevant Context:** `.gitignore` already exists at root (currently empty). `README.md` exists with minimal content.
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -92,7 +92,7 @@
 
 **Relevant Context:** `backend/` directory exists but is empty.
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -120,7 +120,7 @@
 
 **Relevant Context:** Entity files are created in Sub-Task 2 as stubs; this task fills in the column skeleton.
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
@@ -195,7 +195,7 @@
 
 **Relevant Context:** `frontend/` directory exists but is empty.
 
-**Status:** [ ] pending
+**Status:** [x] done
 
 ---
 
