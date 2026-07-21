@@ -1,13 +1,36 @@
-// TODO: Implement user profile queries using AppDataSource
+import { AppDataSource } from '../../data-source';
+import { User } from './user.entity';
+
+export type SafeUser = Omit<User, 'passwordHash'>;
 
 export class UserService {
-  async findById(_id: string): Promise<object> {
-    // TODO: return user from DB (excluding passwordHash)
-    throw new Error('Not implemented');
+  async findById(id: string): Promise<SafeUser> {
+    const userRepo = AppDataSource.getRepository(User);
+
+    const user = await userRepo.findOneBy({ id });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const { passwordHash: _pw, ...safeUser } = user;
+    return safeUser;
   }
 
-  async update(_id: string, _data: Partial<{ name: string }>): Promise<object> {
-    // TODO: update user fields and return updated record
-    throw new Error('Not implemented');
+  async update(id: string, data: Partial<{ name: string }>): Promise<SafeUser> {
+    const userRepo = AppDataSource.getRepository(User);
+
+    const user = await userRepo.findOneBy({ id });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (data.name !== undefined) {
+      user.name = data.name;
+    }
+
+    await userRepo.save(user);
+
+    const { passwordHash: _pw, ...safeUser } = user;
+    return safeUser;
   }
 }

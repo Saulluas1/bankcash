@@ -1,5 +1,8 @@
-// TODO: Implement registration and login logic
-// Dependencies: AppDataSource, bcryptjs, jsonwebtoken, User entity
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
+import { AppDataSource } from '../../data-source';
+import { User } from '../users/user.entity';
+import { env } from '../../config/env';
 
 export interface RegisterDto {
   name: string;
@@ -13,22 +16,52 @@ export interface LoginDto {
 }
 
 export class AuthService {
-  async register(_dto: RegisterDto): Promise<{ token: string }> {
-    // TODO:
-    // 1. Check if user with email already exists
-    // 2. Hash password with bcrypt
-    // 3. Create and save new User entity
-    // 4. Generate JWT token
-    // 5. Return token
-    throw new Error('Not implemented');
+  async register(dto: RegisterDto): Promise<{ token: string }> {
+    const userRepo = AppDataSource.getRepository(User);
+
+    const existing = await userRepo.findOneBy({ email: dto.email });
+    if (existing) {
+      throw new Error('Email already in use');
+    }
+
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+
+    const user = userRepo.create({
+      name: dto.name,
+      email: dto.email,
+      passwordHash,
+    });
+
+    await userRepo.save(user);
+
+    const token = jwt.sign(
+      { sub: user.id, email: user.email },
+      env.jwt.secret,
+      { expiresIn: env.jwt.expiresIn } as jwt.SignOptions
+    );
+
+    return { token };
   }
 
-  async login(_dto: LoginDto): Promise<{ token: string }> {
-    // TODO:
-    // 1. Find user by email
-    // 2. Compare password with bcrypt
-    // 3. Generate JWT token
-    // 4. Return token
-    throw new Error('Not implemented');
+  async login(dto: LoginDto): Promise<{ token: string }> {
+    const userRepo = AppDataSource.getRepository(User);
+
+    const user = await userRepo.findOneBy({ email: dto.email });
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    const valid = await bcrypt.compare(dto.password, user.passwordHash);
+    if (!valid) {
+      throw new Error('Invalid credentials');
+    }
+
+    const token = jwt.sign(
+      { sub: user.id, email: user.email },
+      env.jwt.secret,
+      { expiresIn: env.jwt.expiresIn } as jwt.SignOptions
+    );
+
+    return { token };
   }
 }
