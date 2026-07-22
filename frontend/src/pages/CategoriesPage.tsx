@@ -1,17 +1,8 @@
 import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { useCategories } from '../hooks/useCategories';
+import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 import type { Category } from '../types/category.types';
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const INITIAL_CATEGORIES: Category[] = [
-  { id: '1', name: 'Comida', icon: '🍔', color: '#f97316', userId: 'mock', createdAt: '2024-01-01' },
-  { id: '2', name: 'Transporte', icon: '🚗', color: '#3b82f6', userId: 'mock', createdAt: '2024-01-01' },
-  { id: '3', name: 'Entretenimiento', icon: '🎬', color: '#a855f7', userId: 'mock', createdAt: '2024-01-01' },
-  { id: '4', name: 'Salud', icon: '💊', color: '#22c55e', userId: 'mock', createdAt: '2024-01-01' },
-  { id: '5', name: 'Servicios', icon: '💡', color: '#eab308', userId: 'mock', createdAt: '2024-01-01' },
-  { id: '6', name: 'Ropa', icon: '👕', color: '#ec4899', userId: 'mock', createdAt: '2024-01-01' },
-];
 
 // ─── Category Card ────────────────────────────────────────────────────────────
 
@@ -48,7 +39,7 @@ function CategoryCard({ category, onDelete }: CategoryCardProps) {
 interface CategoryModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (cat: Category) => void;
+  onSave: (name: string, icon: string, color: string) => Promise<void>;
 }
 
 function CategoryModal({ open, onClose, onSave }: CategoryModalProps) {
@@ -56,21 +47,21 @@ function CategoryModal({ open, onClose, onSave }: CategoryModalProps) {
   const [icon, setIcon] = useState('');
   const [color, setColor] = useState('#6b7280');
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) { setError('El nombre es requerido'); return; }
-    const newCat: Category = {
-      id: `c${Date.now()}`,
-      name: name.trim(),
-      icon: icon.trim() || null,
-      color,
-      userId: 'mock',
-      createdAt: new Date().toISOString(),
-    };
-    onSave(newCat);
-    setName(''); setIcon(''); setColor('#6b7280'); setError('');
-    onClose();
+    setSaving(true);
+    try {
+      await onSave(name.trim(), icon.trim(), color);
+      setName(''); setIcon(''); setColor('#6b7280'); setError('');
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al guardar');
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -127,9 +118,10 @@ function CategoryModal({ open, onClose, onSave }: CategoryModalProps) {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                disabled={saving}
+                className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                Guardar
+                {saving ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
           </form>
@@ -142,15 +134,15 @@ function CategoryModal({ open, onClose, onSave }: CategoryModalProps) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const { categories, loading, error, createCategory, deleteCategory } = useCategories();
   const [modalOpen, setModalOpen] = useState(false);
 
-  function handleSave(cat: Category) {
-    setCategories((prev) => [...prev, cat]);
+  async function handleSave(name: string, icon: string, color: string) {
+    await createCategory({ name, icon: icon || undefined, color });
   }
 
-  function handleDelete(id: string) {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+  async function handleDelete(id: string) {
+    await deleteCategory(id);
   }
 
   return (
@@ -165,7 +157,11 @@ export function CategoriesPage() {
         </button>
       </div>
 
-      {categories.length === 0 ? (
+      {loading ? (
+        <LoadingSpinner className="py-16" />
+      ) : error ? (
+        <p className="text-sm text-red-500 py-4">{error}</p>
+      ) : categories.length === 0 ? (
         <p className="text-muted-foreground text-sm">No hay categorías. Crea una nueva.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

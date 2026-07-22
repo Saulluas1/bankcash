@@ -27,8 +27,8 @@ export function RegisterPage() {
     try {
       await registerUser(data);
       navigate('/dashboard');
-    } catch {
-      setError('root', { message: 'Error al crear la cuenta. Intenta con otro correo.' });
+    } catch (err) {
+      setError('root', { message: err instanceof Error ? err.message : 'Error al crear la cuenta. Intenta con otro correo.' });
     }
   };
 

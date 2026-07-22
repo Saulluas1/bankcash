@@ -15,13 +15,26 @@ export interface LoginDto {
   password: string;
 }
 
+interface UserPayload {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+interface AuthResult {
+  token: string;
+  user: UserPayload;
+}
+
 export class AuthService {
-  async register(dto: RegisterDto): Promise<{ token: string }> {
+  async register(dto: RegisterDto): Promise<AuthResult> {
     const userRepo = AppDataSource.getRepository(User);
 
     const existing = await userRepo.findOneBy({ email: dto.email });
     if (existing) {
-      throw new Error('Email already in use');
+      const err = Object.assign(new Error('Email already in use'), { statusCode: 409 });
+      throw err;
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
@@ -35,33 +48,41 @@ export class AuthService {
     await userRepo.save(user);
 
     const token = jwt.sign(
-      { sub: user.id, email: user.email },
+      { userId: user.id, email: user.email },
       env.jwt.secret,
       { expiresIn: env.jwt.expiresIn } as jwt.SignOptions
     );
 
-    return { token };
+    return {
+      token,
+      user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() },
+    };
   }
 
-  async login(dto: LoginDto): Promise<{ token: string }> {
+  async login(dto: LoginDto): Promise<AuthResult> {
     const userRepo = AppDataSource.getRepository(User);
 
     const user = await userRepo.findOneBy({ email: dto.email });
     if (!user) {
-      throw new Error('Invalid credentials');
+      const err = Object.assign(new Error('Invalid credentials'), { statusCode: 401 });
+      throw err;
     }
 
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
     if (!valid) {
-      throw new Error('Invalid credentials');
+      const err = Object.assign(new Error('Invalid credentials'), { statusCode: 401 });
+      throw err;
     }
 
     const token = jwt.sign(
-      { sub: user.id, email: user.email },
+      { userId: user.id, email: user.email },
       env.jwt.secret,
       { expiresIn: env.jwt.expiresIn } as jwt.SignOptions
     );
 
-    return { token };
+    return {
+      token,
+      user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() },
+    };
   }
 }

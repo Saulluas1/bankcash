@@ -47,3 +47,4 @@ coverage/
 .cache/
 # --- plan ---
 backend-services-plan.md
+frontend-integration-plan.md

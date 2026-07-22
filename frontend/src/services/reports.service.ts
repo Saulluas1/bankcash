@@ -2,9 +2,8 @@ import api from './api';
 import type { ApiResponse } from '../types/api.types';
 
 export interface MonthlySummary {
-  month: string;
-  totalIncome: number;
-  totalExpense: number;
+  income: number;
+  expense: number;
   balance: number;
 }
 
