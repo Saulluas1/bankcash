@@ -53,7 +53,9 @@ export function DashboardPage() {
   const { categories } = useCategories();
 
   const loading = reportsLoading || txLoading;
-  const recentTransactions = transactions.slice(0, 5);
+  const recentTransactions = [...transactions]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
 
   async function handleSave(values: TransactionFormValues) {
     await createTransaction({
