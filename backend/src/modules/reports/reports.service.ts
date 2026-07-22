@@ -77,11 +77,12 @@ export class ReportsService {
   async getTrend(userId: string, months: number): Promise<TrendPoint[]> {
     const transactionRepo = AppDataSource.getRepository(Transaction);
 
-    // Build start date: first day of `months` months ago
+    // Build start date: first day of `months` months ago (use local time to avoid UTC off-by-one)
     const now = new Date();
-    const startYear = now.getFullYear();
-    const startMon = now.getMonth() + 1 - (months - 1); // 1-based
-    const startDate = new Date(startYear, startMon - 1, 1).toISOString().slice(0, 10);
+    const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+    const y = start.getFullYear();
+    const mo = String(start.getMonth() + 1).padStart(2, '0');
+    const startDate = `${y}-${mo}-01`;
 
     const rows = await transactionRepo
       .createQueryBuilder('t')

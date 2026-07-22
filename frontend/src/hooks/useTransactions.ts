@@ -6,7 +6,8 @@ import type { Transaction, CreateTransactionPayload } from '../types/transaction
 
 export type TransactionFilter = 'all' | 'income' | 'expense';
 
-export function useTransactions(filter: TransactionFilter = 'all') {
+/** month: 'YYYY-MM' or '' for all */
+export function useTransactions(filter: TransactionFilter = 'all', month = '') {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,9 +19,18 @@ export function useTransactions(filter: TransactionFilter = 'all') {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    const params = filter !== 'all' ? { type: filter } : undefined;
+    const params: Record<string, string> = {};
+    if (filter !== 'all') params.type = filter;
+    if (month) {
+      const [y, m] = month.split('-').map(Number);
+      params.startDate = `${month}-01`;
+      // day 0 of next month = last day of current month; use local formatter
+      const lastDate = new Date(y, m, 0);
+      const lastDay = String(lastDate.getDate()).padStart(2, '0');
+      params.endDate = `${month}-${lastDay}`;
+    }
     transactionsService
-      .getAll(params)
+      .getAll(Object.keys(params).length ? params : undefined)
       .then(({ data }) => {
         // data.data is { data: Transaction[], meta: {...} } — the paginated wrapper
         if (!cancelled) setTransactions(data.data?.data ?? []);
@@ -38,7 +48,7 @@ export function useTransactions(filter: TransactionFilter = 'all') {
         if (!cancelled) setLoading(false);
       });
     return () => { cancelled = true; };
-  }, [filter, tick]);
+  }, [filter, month, tick]);
 
   const createTransaction = useCallback(async (payload: CreateTransactionPayload) => {
     try {

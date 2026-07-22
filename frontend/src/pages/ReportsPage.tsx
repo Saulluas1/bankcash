@@ -5,9 +5,35 @@ import { MonthlyBalanceChart } from '../components/charts/MonthlyBalanceChart';
 import { TrendLineChart } from '../components/charts/TrendLineChart';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 
+// Current month as 'YYYY-MM'
+const currentMonth = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
+const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
 export function ReportsPage() {
   const [period, setPeriod] = useState<ReportPeriod>('6M');
-  const { trendData, categoryData, loading, error } = useReports(period);
+  const [monthDraft, setMonthDraft] = useState(currentMonth());
+  const [month, setMonth] = useState(currentMonth());
+  const [monthError, setMonthError] = useState('');
+  const { trendData, categoryData, loading, error } = useReports(period, month);
+
+  function applyMonth() {
+    if (!MONTH_RE.test(monthDraft)) {
+      setMonthError('Formato inválido. Usa el selector o escribe AAAA-MM.');
+      return;
+    }
+    setMonthError('');
+    setMonth(monthDraft);
+  }
+
+  function clearMonth() {
+    setMonthDraft('');
+    setMonthError('');
+    setMonth('');
+  }
 
   const btnClass = (p: ReportPeriod) =>
     `px-4 py-1.5 text-sm rounded-full border transition-colors ${
@@ -18,12 +44,43 @@ export function ReportsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold">Reportes</h1>
-        <div className="flex gap-2">
-          <button className={btnClass('3M')} onClick={() => setPeriod('3M')}>3M</button>
-          <button className={btnClass('6M')} onClick={() => setPeriod('6M')}>6M</button>
-          <button className={btnClass('1A')} onClick={() => setPeriod('1A')}>1A</button>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Month picker */}
+          <input
+            type="month"
+            value={monthDraft}
+            onChange={(e) => setMonthDraft(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && applyMonth()}
+            className="px-3 py-1.5 text-sm rounded-full border border-border bg-background hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          <button
+            onClick={applyMonth}
+            disabled={!monthDraft}
+            className="px-3 py-1.5 text-sm rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Buscar
+          </button>
+          {monthError && (
+            <span className="text-xs text-red-500 whitespace-nowrap">{monthError}</span>
+          )}
+          {month && (
+            <button
+              onClick={clearMonth}
+              className="px-3 py-1.5 text-sm rounded-full border border-border hover:bg-muted transition-colors text-muted-foreground"
+            >
+              Ver todos
+            </button>
+          )}
+
+          {/* Period buttons (affect trend chart range) */}
+          <div className="flex gap-2 border-l border-border pl-2 ml-1">
+            <button className={btnClass('3M')} onClick={() => setPeriod('3M')}>3M</button>
+            <button className={btnClass('6M')} onClick={() => setPeriod('6M')}>6M</button>
+            <button className={btnClass('1A')} onClick={() => setPeriod('1A')}>1A</button>
+          </div>
         </div>
       </div>
 
