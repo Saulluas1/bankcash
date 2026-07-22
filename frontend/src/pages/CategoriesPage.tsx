@@ -68,7 +68,7 @@ function CategoryModal({ open, onClose, onSave }: CategoryModalProps) {
     <Dialog.Root open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-card border border-border rounded-xl p-6 shadow-lg">
+        <Dialog.Content className="fixed inset-x-3 bottom-3 sm:inset-auto sm:left-1/2 sm:top-1/2 z-50 sm:-translate-x-1/2 sm:-translate-y-1/2 w-auto sm:w-full sm:max-w-sm bg-card border border-border rounded-xl p-5 sm:p-6 shadow-lg max-h-[90dvh] overflow-y-auto">
           <Dialog.Title className="text-lg font-semibold mb-4">Nueva categoría</Dialog.Title>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
@@ -147,13 +147,13 @@ export function CategoriesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <h1 className="text-2xl font-bold">Categorías</h1>
         <button
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+          className="px-3 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity whitespace-nowrap"
         >
-          + Nueva categoría
+          + Nueva
         </button>
       </div>
 

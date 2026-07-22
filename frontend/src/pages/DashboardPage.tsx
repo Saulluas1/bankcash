@@ -72,13 +72,13 @@ export function DashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <button
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+          className="px-3 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity whitespace-nowrap"
         >
-          + Nueva transacción
+          + Nueva
         </button>
       </div>
 

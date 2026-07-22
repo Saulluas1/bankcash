@@ -79,29 +79,33 @@ export function TransactionsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <h1 className="text-2xl font-bold">Transacciones</h1>
         <button
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+          className="px-3 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity whitespace-nowrap"
         >
-          + Nueva transacción
+          + Nueva
         </button>
       </div>
 
       {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-2 mb-5">
-        <button className={filterBtnClass('all')} onClick={() => setFilter('all')}>Todos</button>
-        <button className={filterBtnClass('income')} onClick={() => setFilter('income')}>Ingresos</button>
-        <button className={filterBtnClass('expense')} onClick={() => setFilter('expense')}>Gastos</button>
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2 mb-5">
+        {/* Type filters */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <button className={filterBtnClass('all')} onClick={() => setFilter('all')}>Todos</button>
+          <button className={filterBtnClass('income')} onClick={() => setFilter('income')}>Ingresos</button>
+          <button className={filterBtnClass('expense')} onClick={() => setFilter('expense')}>Gastos</button>
+        </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        {/* Month picker */}
+        <div className="flex items-center gap-2 flex-wrap sm:ml-auto">
           <input
             type="month"
             value={monthDraft}
             onChange={(e) => setMonthDraft(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && applyMonth()}
-            className="px-3 py-1.5 text-sm rounded-full border border-border bg-background hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="px-3 py-1.5 text-sm rounded-full border border-border bg-background hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 w-full sm:w-auto"
           />
           <button
             onClick={applyMonth}

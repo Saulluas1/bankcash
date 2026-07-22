@@ -44,17 +44,25 @@ export function ReportsPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 className="text-2xl font-bold">Reportes</h1>
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reportes</h1>
+          {/* Period buttons */}
+          <div className="flex gap-2">
+            <button className={btnClass('3M')} onClick={() => setPeriod('3M')}>3M</button>
+            <button className={btnClass('6M')} onClick={() => setPeriod('6M')}>6M</button>
+            <button className={btnClass('1A')} onClick={() => setPeriod('1A')}>1A</button>
+          </div>
+        </div>
 
+        {/* Month picker row */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Month picker */}
           <input
             type="month"
             value={monthDraft}
             onChange={(e) => setMonthDraft(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && applyMonth()}
-            className="px-3 py-1.5 text-sm rounded-full border border-border bg-background hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="px-3 py-1.5 text-sm rounded-full border border-border bg-background hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 w-full sm:w-auto"
           />
           <button
             onClick={applyMonth}
@@ -74,13 +82,6 @@ export function ReportsPage() {
               Ver todos
             </button>
           )}
-
-          {/* Period buttons (affect trend chart range) */}
-          <div className="flex gap-2 border-l border-border pl-2 ml-1">
-            <button className={btnClass('3M')} onClick={() => setPeriod('3M')}>3M</button>
-            <button className={btnClass('6M')} onClick={() => setPeriod('6M')}>6M</button>
-            <button className={btnClass('1A')} onClick={() => setPeriod('1A')}>1A</button>
-          </div>
         </div>
       </div>
 

@@ -33,8 +33,8 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-sm p-8 bg-card border border-border rounded-xl shadow-sm">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm p-6 sm:p-8 bg-card border border-border rounded-xl shadow-sm">
         <h1 className="text-2xl font-bold mb-2">Crear cuenta</h1>
         <p className="text-muted-foreground text-sm mb-6">Empieza a controlar tus gastos</p>
 

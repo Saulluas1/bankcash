@@ -59,7 +59,7 @@ export function TransactionModal({ open, onClose, onSave, categoryOptions }: Tra
     <Dialog.Root open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-card border border-border rounded-xl p-6 shadow-lg">
+        <Dialog.Content className="fixed inset-x-3 bottom-3 sm:inset-auto sm:left-1/2 sm:top-1/2 z-50 sm:-translate-x-1/2 sm:-translate-y-1/2 w-auto sm:w-full sm:max-w-md bg-card border border-border rounded-xl p-5 sm:p-6 shadow-lg max-h-[90dvh] overflow-y-auto">
           <Dialog.Title className="text-lg font-semibold mb-4">Nueva transacción</Dialog.Title>
 
           {apiError && <p className="text-sm text-red-500 mb-3">{apiError}</p>}
